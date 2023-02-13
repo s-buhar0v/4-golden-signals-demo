@@ -1,72 +1,54 @@
 package main
 
 import (
-	"fmt"
+	"math/rand"
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/s-buhar0v/demoapp/internal/metrics"
 )
 
-var (
-	httpRequestsTotal = promauto.NewCounterVec(
-		prometheus.CounterOpts{
-			Name: "http_requests_total",
-		},
-		[]string{"pattern", "method", "status"},
-	)
-)
+func randomResponseTimeMS(max int) time.Duration {
+	min := 1
+	r := (rand.Intn(max-min) + min)
 
-type StatusResponseWriter struct {
-	http.ResponseWriter
-	status int
-}
-
-func (srw *StatusResponseWriter) WriteHeader(status int) {
-	srw.status = status
-	srw.ResponseWriter.WriteHeader(status)
-}
-
-func NewStatusResponseWriter(w http.ResponseWriter) StatusResponseWriter {
-	return StatusResponseWriter{w, http.StatusOK}
-}
-
-func Metrics(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		statusCodeResponseWriter := NewStatusResponseWriter(w)
-
-		next.ServeHTTP(&statusCodeResponseWriter, r)
-
-		pattern := chi.RouteContext(r.Context()).RoutePattern()
-		method := chi.RouteContext(r.Context()).RouteMethod
-		status := fmt.Sprintf("%d", statusCodeResponseWriter.status)
-
-		fmt.Println(statusCodeResponseWriter.status)
-
-		httpRequestsTotal.WithLabelValues(pattern, method, status).Inc()
-	})
+	return time.Duration(r) * time.Millisecond
 }
 
 func main() {
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
-	router.Use(Metrics)
+	router.Use(metrics.HTTPMetrics)
 
-	router.Get("/ok", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/code-200", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
-	router.Get("/bad_request", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/code-400", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 	})
-	router.Get("/internal_server_error", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/code-500", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
+	})
+
+	router.Get("/ms-200", func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(randomResponseTimeMS(200))
+		w.WriteHeader(http.StatusOK)
+	})
+	router.Get("/ms-500", func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(randomResponseTimeMS(500))
+		w.WriteHeader(http.StatusOK)
+	})
+	router.Get("/ms-1000", func(w http.ResponseWriter, r *http.Request) {
+		time.Sleep(randomResponseTimeMS(1000))
+		w.WriteHeader(http.StatusOK)
 	})
 
 	router.Handle("/metrics", promhttp.Handler())
 
-	http.ListenAndServe(":8080", router)
-
+	if err := http.ListenAndServe(":8080", router); err != nil {
+		panic(err)
+	}
 }
