@@ -1,0 +1,36 @@
+version: '3'
+
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/go:0-1.19-bullseye
+    working_dir: /workspace
+    volumes:
+      - ../:/workspace
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    ports:
+      - 8080:8080
+    networks:
+      - local
+  prometheus:
+    image: prom/prometheus:v2.42.0
+    ports:
+      - 9090:9090
+    volumes:
+      - ../configs/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - local
+  alertmanager:
+    image: prom/alertmanager:v0.25.0
+    ports:
+      - 9093:9093
+    networks:
+      - local
+  grafana:
+    image: grafana/grafana:9.3.6
+    ports:
+      - 3000:3000
+    networks:
+      - local
+
+networks:
+  local:
