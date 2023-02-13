@@ -1,6 +1,15 @@
 ---
+global:
+  scrape_interval: 30s
+
 alerting:
   alertmanagers:
   - static_configs:
     - targets:
       - alertmanager:9093
+
+scrape_configs:
+  - job_name: app
+    static_configs:
+    - targets:
+        - app:8080
