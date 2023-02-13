@@ -21,5 +21,6 @@ func HTTPMetrics(next http.Handler) http.Handler {
 
 		httpRequestsTotal.WithLabelValues(pattern, method, status).Inc()
 		httpRequestsDurationHistorgram.WithLabelValues(pattern, method).Observe(elapsedSeocnds)
+		httpRequestsDurationSummary.WithLabelValues(pattern, method).Observe(elapsedSeocnds)
 	})
 }
