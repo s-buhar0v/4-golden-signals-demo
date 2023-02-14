@@ -1,74 +1,49 @@
 package main
 
 import (
-	"math/rand"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
+	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/s-buhar0v/demoapp/internal/helpers"
 	"github.com/s-buhar0v/demoapp/internal/metrics"
+	"github.com/s-buhar0v/demoapp/internal/middleware"
 )
 
-func randomDurationMS(maxMS int) time.Duration {
-	minMS := 1
-	r := (rand.Intn(maxMS-minMS) + minMS)
-
-	return time.Duration(r) * time.Millisecond
-}
-
-func random4xx() int {
-	statuses := []int{
-		http.StatusBadRequest,
-		http.StatusUnauthorized,
-		http.StatusNotFound,
-		http.StatusTooManyRequests,
-	}
-
-	index := rand.Intn(len(statuses) - 1)
-
-	return statuses[index]
-}
-
-func random5xx() int {
-	statuses := []int{
-		http.StatusInternalServerError,
-		http.StatusNotImplemented,
-		http.StatusServiceUnavailable,
-		http.StatusGatewayTimeout,
-	}
-
-	index := rand.Intn(len(statuses) - 1)
-
-	return statuses[index]
-}
+const (
+	httpRequestsInflightMax = 10
+)
 
 func main() {
 	router := chi.NewRouter()
-	router.Use(middleware.Logger)
-	router.Use(metrics.HTTPMetrics)
+	router.Use(chimiddleware.Logger)
+	router.Use(middleware.HTTPMetrics)
+	router.Use(middleware.InflightRequests)
+
+	metrics.HttpRequestsInflightMax.WithLabelValues().Set(httpRequestsInflightMax)
 
 	router.Get("/code-200", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	})
 	router.Get("/code-4xx", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(random4xx())
+		w.WriteHeader(helpers.Random4xx())
 	})
 	router.Get("/code-5xx", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(random5xx())
+		w.WriteHeader(helpers.Random5xx())
 	})
 
 	router.Get("/ms-200", func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(randomDurationMS(200))
+		time.Sleep(helpers.RandomDurationMS(200))
 		w.WriteHeader(http.StatusOK)
 	})
 	router.Get("/ms-500", func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(randomDurationMS(500))
+		time.Sleep(helpers.RandomDurationMS(500))
 		w.WriteHeader(http.StatusOK)
 	})
 	router.Get("/ms-1000", func(w http.ResponseWriter, r *http.Request) {
-		time.Sleep(randomDurationMS(1000))
+		time.Sleep(helpers.RandomDurationMS(1000))
 		w.WriteHeader(http.StatusOK)
 	})
 

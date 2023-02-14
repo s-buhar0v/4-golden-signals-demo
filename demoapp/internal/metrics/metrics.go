@@ -6,14 +6,28 @@ import (
 )
 
 var (
-	httpRequestsTotal = promauto.NewCounterVec(
+	HttpRequestsTotal = promauto.NewCounterVec(
 		prometheus.CounterOpts{
 			Name: "http_requests_total",
 		},
 		[]string{"pattern", "method", "status"},
 	)
 
-	httpRequestsDurationHistorgram = promauto.NewHistogramVec(
+	HttpRequestsCurrent = promauto.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "http_requests_inflight_current",
+		},
+		[]string{},
+	)
+
+	HttpRequestsInflightMax = promauto.NewGaugeVec(
+		prometheus.GaugeOpts{
+			Name: "http_requests_inflight_max",
+		},
+		[]string{},
+	)
+
+	HttpRequestsDurationHistorgram = promauto.NewHistogramVec(
 		prometheus.HistogramOpts{
 			Name: "http_request_duration_seconds_historgram",
 			Buckets: []float64{
@@ -27,7 +41,7 @@ var (
 		[]string{"pattern", "method"},
 	)
 
-	httpRequestsDurationSummary = promauto.NewSummaryVec(
+	HttpRequestsDurationSummary = promauto.NewSummaryVec(
 		prometheus.SummaryOpts{
 			Name: "http_request_duration_seconds_summary",
 			Objectives: map[float64]float64{
