@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
-)
-
-const (
-	maxSuccessfulRequests = 5
-	maxErrorRequests      = 1
 )
 
 var (
@@ -26,6 +23,23 @@ var (
 	requests = map[string]int{}
 )
 
+func getMaxRequestsCount() (int, int) {
+	maxSuccessfulRequests := 5
+	maxSuccessfulRequestsString := os.Getenv("HTTP_REQUESTS_SUCCESSFUL_MAX")
+	if maxSuccessfulRequestsString != "" {
+		maxSuccessfulRequests, _ = strconv.Atoi(maxSuccessfulRequestsString)
+	}
+
+	maxErrorRequests := 1
+	maxErrorRequestsString := os.Getenv("HTTP_REQUESTS_ERROR_MAX")
+	if maxErrorRequestsString != "" {
+		maxErrorRequests, _ = strconv.Atoi(maxErrorRequestsString)
+	}
+
+	return maxSuccessfulRequests, maxErrorRequests
+
+}
+
 func randomizeEndpoints() {
 	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(
@@ -35,6 +49,7 @@ func randomizeEndpoints() {
 }
 
 func main() {
+	maxSuccessfulRequests, maxErrorRequests := getMaxRequestsCount()
 
 	for {
 		totalRequestsCount := 0

@@ -2,6 +2,8 @@ package main
 
 import (
 	"net/http"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -12,11 +14,19 @@ import (
 	"github.com/s-buhar0v/demoapp/internal/middleware"
 )
 
-const (
-	httpRequestsInflightMax = 100
-)
+func getHTTPRequestsInflightMax() float64 {
+	httpRequestsInflightMaxString := os.Getenv("HTTP_REQUESTS_INFLIGHT_MAX")
+	httpRequestsInflightMax := 100.0
+	if httpRequestsInflightMaxString != "" {
+		httpRequestsInflightMax, _ = strconv.ParseFloat(httpRequestsInflightMaxString, 32)
+	}
+
+	return httpRequestsInflightMax
+}
 
 func main() {
+	httpRequestsInflightMax := getHTTPRequestsInflightMax()
+
 	router := chi.NewRouter()
 	router.Use(chimiddleware.Logger)
 	router.Use(middleware.HTTPMetrics)
