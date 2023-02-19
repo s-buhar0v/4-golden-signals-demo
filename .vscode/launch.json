@@ -11,5 +11,12 @@
             "mode": "debug",
             "program": "${workspaceFolder}/demoapp/cmd/app/main.go",
         },
+        {
+            "name": "Load",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/demoapp/cmd/app/main.go",
+        },
     ]
 }

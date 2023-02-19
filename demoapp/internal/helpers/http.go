@@ -13,6 +13,17 @@ func RandomDurationMS(maxMS int) time.Duration {
 	return time.Duration(r) * time.Millisecond
 }
 
+func Random2xx() int {
+	statuses := []int{
+		http.StatusOK,
+		http.StatusAccepted,
+	}
+
+	index := rand.Intn(len(statuses) - 1)
+
+	return statuses[index]
+}
+
 func Random4xx() int {
 	statuses := []int{
 		http.StatusBadRequest,
