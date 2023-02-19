@@ -35,11 +35,4 @@
    4. Запускаем демо-приложение, которое должно отдавать метрики - `F5`
    5. Убеждаемся что демо-приложение отдает метрики по адресу `localhost:8080/metrics` ![metrics.png](docs/container.png)
 
-
 ### Домашнее задание
-
-## Links
-
-https://prometheus.io/docs/guides/go-application/
-https://grafana.com/blog/2022/03/01/how-summary-metrics-work-in-prometheus/
-https://www.robustperception.io/how-does-a-prometheus-summary-work/
