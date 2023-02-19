@@ -4,13 +4,14 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 )
 
 const (
-	maxSuccessfulRequests = 8
-	maxErrorRequests      = 2
+	maxSuccessfulRequests = 5
+	maxErrorRequests      = 1
 )
 
 var (
@@ -42,7 +43,7 @@ func main() {
 
 		for _, e := range endpoints {
 			requestsToEndpoint := 0
-			if e == "/code-200" {
+			if e == "/code-200" || strings.HasPrefix(e, "/ms-") {
 				requestsToEndpoint = rand.Intn(maxSuccessfulRequests)
 			} else {
 				requestsToEndpoint = rand.Intn(maxErrorRequests)

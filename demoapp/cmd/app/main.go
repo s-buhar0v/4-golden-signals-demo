@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	httpRequestsInflightMax = 10
+	httpRequestsInflightMax = 100
 )
 
 func main() {

@@ -19,12 +19,6 @@ services:
       - ../configs/prometheus.yml:/etc/prometheus/prometheus.yml
     networks:
       - local
-  alertmanager:
-    image: prom/alertmanager:v0.25.0
-    ports:
-      - 9093:9093
-    networks:
-      - local
   grafana:
     image: grafana/grafana:9.3.6
     ports:
