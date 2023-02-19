@@ -24,13 +24,13 @@ var (
 )
 
 func getMaxRequestsCount() (int, int) {
-	maxSuccessfulRequests := 5
+	maxSuccessfulRequests, maxErrorRequests := 15, 5
+
 	maxSuccessfulRequestsString := os.Getenv("HTTP_REQUESTS_SUCCESSFUL_MAX")
 	if maxSuccessfulRequestsString != "" {
 		maxSuccessfulRequests, _ = strconv.Atoi(maxSuccessfulRequestsString)
 	}
 
-	maxErrorRequests := 1
 	maxErrorRequestsString := os.Getenv("HTTP_REQUESTS_ERROR_MAX")
 	if maxErrorRequestsString != "" {
 		maxErrorRequests, _ = strconv.Atoi(maxErrorRequestsString)

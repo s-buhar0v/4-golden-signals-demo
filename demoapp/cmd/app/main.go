@@ -16,7 +16,7 @@ import (
 
 func getHTTPRequestsInflightMax() float64 {
 	httpRequestsInflightMaxString := os.Getenv("HTTP_REQUESTS_INFLIGHT_MAX")
-	httpRequestsInflightMax := 100.0
+	httpRequestsInflightMax := 20.0
 	if httpRequestsInflightMaxString != "" {
 		httpRequestsInflightMax, _ = strconv.ParseFloat(httpRequestsInflightMaxString, 32)
 	}
