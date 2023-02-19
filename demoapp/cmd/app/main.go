@@ -24,7 +24,7 @@ func main() {
 
 	metrics.HttpRequestsInflightMax.WithLabelValues().Set(httpRequestsInflightMax)
 
-	router.Get("/code-200", func(w http.ResponseWriter, r *http.Request) {
+	router.Get("/code-2xx", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(helpers.Random2xx())
 	})
 	router.Get("/code-4xx", func(w http.ResponseWriter, r *http.Request) {

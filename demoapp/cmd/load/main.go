@@ -16,7 +16,7 @@ const (
 
 var (
 	endpoints = []string{
-		"/code-200",
+		"/code-2xx",
 		"/code-4xx",
 		"/code-5xx",
 		"/ms-200",
