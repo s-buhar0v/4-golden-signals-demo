@@ -16,13 +16,13 @@ func HTTPMetrics(next http.Handler) http.Handler {
 
 		next.ServeHTTP(srw, r)
 
-		elapsedSeocnds := time.Since(now).Seconds()
+		elapsedSeconds := time.Since(now).Seconds()
 		pattern := chi.RouteContext(r.Context()).RoutePattern()
 		method := chi.RouteContext(r.Context()).RouteMethod
 		status := srw.GetStatusString()
 
 		metrics.HttpRequestsTotal.WithLabelValues(pattern, method, status).Inc()
-		metrics.HttpRequestsDurationHistorgram.WithLabelValues(pattern, method).Observe(elapsedSeocnds)
-		metrics.HttpRequestsDurationSummary.WithLabelValues(pattern, method).Observe(elapsedSeocnds)
+		metrics.HttpRequestsDurationHistorgram.WithLabelValues(pattern, method).Observe(elapsedSeconds)
+		metrics.HttpRequestsDurationSummary.WithLabelValues(pattern, method).Observe(elapsedSeconds)
 	})
 }
